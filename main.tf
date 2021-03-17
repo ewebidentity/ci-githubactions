@@ -27,10 +27,6 @@ resource "google_pubsub_subscription" "orders" {
   }
 }
 
-resource "google_pubsub_topic" "orders" {
-  name = var.gcp_topic_name
-}
-
 resource "google_pubsub_subscription" "orders" {
   name  = var.gcp_subscription_name
   topic = google_pubsub_topic.orders.name
