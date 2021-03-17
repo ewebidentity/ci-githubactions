@@ -27,29 +27,29 @@ resource "google_pubsub_subscription" "orders" {
   }
 }
 
-resource "google_pubsub_subscription" "orders" {
-  name  = var.gcp_subscription_name
-  topic = google_pubsub_topic.orders.name
+# resource "google_pubsub_subscription" "orders" {
+#   name  = var.gcp_subscription_name
+#   topic = google_pubsub_topic.orders.name
 
-  labels = {
-    foo = "bar"
-  }
+#   labels = {
+#     foo = "bar"
+#   }
 
-  # 20 minutes
-  message_retention_duration = "1200s"
-  retain_acked_messages      = true
+#   # 20 minutes
+#   message_retention_duration = "1200s"
+#   retain_acked_messages      = true
 
-  ack_deadline_seconds = 20
+#   ack_deadline_seconds = 20
 
-  expiration_policy {
-    ttl = "300000.5s"
-  }
-  retry_policy {
-    minimum_backoff = "10s"
-  }
+#   expiration_policy {
+#     ttl = "300000.5s"
+#   }
+#   retry_policy {
+#     minimum_backoff = "10s"
+#   }
 
-  enable_message_ordering = false
-}
+#   enable_message_ordering = false
+# }
 
 # resource "random_id" "suffix" {
 #   byte_length = 4
