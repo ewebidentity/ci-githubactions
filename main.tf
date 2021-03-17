@@ -5,10 +5,9 @@ provider "google" {
 }
 
 module "pubsub" {
-  source       = "../../"
-  project_id   = var.gcp_project_id
-  topic        = var.gcp_topic_name
-  topic_labels = var.gcp_topic_labels
+  source     = "../../"
+  project_id = var.gcp_project_id
+  topic      = var.gcp_topic_name
 
   pull_subscriptions = [
     {

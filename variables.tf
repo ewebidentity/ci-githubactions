@@ -17,9 +17,3 @@ variable "gcp_topic_name" {
   type        = string
   description = "The name for Pub/Sub topic on GCP"
 }
-
-variable "gcp_topic_labels" {
-  type        = map(string)
-  description = "A map of labels to assign to the Pub/Sub topic"
-  default     = {}
-}
