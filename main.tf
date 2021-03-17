@@ -16,7 +16,6 @@ resource "google_pubsub_subscription" "orders" {
     foo = "bar"
   }
 
-  # 20 minutes
   message_retention_duration = "1200s"
   retain_acked_messages      = true
 
