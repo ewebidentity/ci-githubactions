@@ -1,0 +1,80 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    steps:
+      - name: configure gcloud
+        id: config_gcloud
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: "latest"
+          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: checkout
+        id: checkout_code
+        uses: actions/checkout@v2
+
+      - name: set GCP project
+        id: config_project
+        run: gcloud config set project terraform-gcp-actions
+
+      - name: "Decrypt key service account"
+        id: decrypt_SA
+        run: gcloud secrets versions access 1 --secret="terraform-gcp-actions-skey"
+
+      - name: "Terraform Init"
+        id: terraform_init
+        uses: ops18/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.13
+          tf_actions_comment: "false"
+          tf_actions_subcommand: init
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
+          
+      - name: "Terraform Validate"
+        id: terraform_validate
+        uses: ops18/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.13
+          tf_actions_comment: "false"
+          tf_actions_subcommand: validate
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}} 
+      - name: "Terraform Plan"
+        id: terraform_plan
+        uses: ops18/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.13
+          tf_actions_comment: "false"
+          tf_actions_subcommand: plan
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
+          
+      - name: "Terraform Apply"
+        uses: ops18/terraform-github-actions@master
+        id: terraform_apply
+        with:
+          tf_actions_version: 0.12.13
+          tf_actions_comment: "false"
+          tf_actions_subcommand: apply
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
