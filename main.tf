@@ -12,18 +12,21 @@ resource "google_pubsub_subscription" "orders" {
   name  = var.gcp_subscription_name
   topic = google_pubsub_topic.orders.name
 
-  ack_deadline_seconds = 20
-
   labels = {
     foo = "bar"
   }
 
-  push_config {
-    push_endpoint = "https://${var.project_id}.appspot.com/"
+  # 20 minutes
+  message_retention_duration = "1200s"
+  retain_acked_messages      = true
 
-    attributes = {
-      x-goog-version = "v1"
-    }
+  ack_deadline_seconds = 20
+
+  expiration_policy {
+    ttl = "300000.5s"
+  }
+  retry_policy {
+    minimum_backoff = "10s"
   }
 }
 
@@ -31,22 +34,21 @@ resource "google_pubsub_subscription" "orders" {
 #   name  = var.gcp_subscription_name
 #   topic = google_pubsub_topic.orders.name
 
+#   ack_deadline_seconds = 20
+
 #   labels = {
 #     foo = "bar"
 #   }
 
-#   # 20 minutes
-#   message_retention_duration = "1200s"
-#   retain_acked_messages      = true
+#   push_config {
+#     push_endpoint = "https://${var.project_id}.example.com/"
 
-#   ack_deadline_seconds = 20
+#     attributes = {
+#       x-goog-version = "v1"
+#     }
+#   }
+# }
 
-#   expiration_policy {
-#     ttl = "300000.5s"
-#   }
-#   retry_policy {
-#     minimum_backoff = "10s"
-#   }
 
 #   enable_message_ordering = false
 # }
