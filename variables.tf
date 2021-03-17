@@ -1,0 +1,14 @@
+variable "gcp_project_id" {
+  type        = string
+  description = "The GCP project ID"
+}
+
+variable "gcp_region" {
+  type        = string
+  description = "The GCP region in which to deploy"
+}
+
+variable "gcp_zone" {
+  type        = string
+  description = "The GCP zone in which to deploy"
+}
