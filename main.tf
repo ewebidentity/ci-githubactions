@@ -1,31 +1,58 @@
 provider "google" {
-  # project = var.gcp_project_id
-  region = var.gcp_region
-  # zone    = var.gcp_zone
+  project = var.gcp_project_id
+  region  = var.gcp_region
+  zone    = var.gcp_zone
 }
 
-module "pubsub" {
-  source     = "../../"
-  project_id = var.gcp_project_id
-  topic      = var.gcp_topic_name
+resource "google_pubsub_topic" "orders" {
+  name = var.gcp_topic_name
+}
 
-  pull_subscriptions = [
-    {
-      name                 = "pull"
-      ack_deadline_seconds = 10
-    },
-  ]
+resource "google_pubsub_subscription" "orders" {
+  name  = var.gcp_subscription_name
+  topic = google_pubsub_topic.orders.name
 
-  push_subscriptions = [
-    {
-      name                 = "push"
-      push_endpoint        = "https://${var.gcp_project_id}.appspot.com/"
-      x-goog-version       = "v1beta1"
-      ack_deadline_seconds = 20
-      expiration_policy    = "1209600s" // two weeks
-    },
-  ]
+  ack_deadline_seconds = 20
 
+  labels = {
+    foo = "bar"
+  }
+
+  push_config {
+    push_endpoint = "https://${var.project_id}.appspot.com/"
+
+    attributes = {
+      x-goog-version = "v1"
+    }
+  }
+}
+
+resource "google_pubsub_topic" "orders" {
+  name = var.gcp_topic_name
+}
+
+resource "google_pubsub_subscription" "orders" {
+  name  = var.gcp_subscription_name
+  topic = google_pubsub_topic.orders.name
+
+  labels = {
+    foo = "bar"
+  }
+
+  # 20 minutes
+  message_retention_duration = "1200s"
+  retain_acked_messages      = true
+
+  ack_deadline_seconds = 20
+
+  expiration_policy {
+    ttl = "300000.5s"
+  }
+  retry_policy {
+    minimum_backoff = "10s"
+  }
+
+  enable_message_ordering = false
 }
 
 # resource "random_id" "suffix" {
