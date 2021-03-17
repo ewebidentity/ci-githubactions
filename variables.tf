@@ -12,3 +12,13 @@ variable "gcp_zone" {
   type        = string
   description = "The GCP zone in which to deploy"
 }
+
+variable "gcp_topic_name" {
+  type        = string
+  description = "The name for Pub/Sub topic on GCP"
+}
+
+variable "gcp_subscription_name" {
+  type        = string
+  description = "The name for Pub/Sub subscription on GCP"
+}
